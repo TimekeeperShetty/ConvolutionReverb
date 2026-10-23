@@ -1,0 +1,19 @@
+# Build output
+build/
+build-*/
+cmake-build-*/
+out/
+
+# IDE / editor files
+.vs/
+.vscode/
+.idea/
+*.user
+*.xcuserstate
+xcuserdata/
+CMakeSettings.json
+CMakeUserPresets.json
+
+# OS junk
+.DS_Store
+Thumbs.db
