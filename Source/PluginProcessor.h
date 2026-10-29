@@ -55,7 +55,10 @@ public:
     //==============================================================================
     // All user-facing parameters live here. The editor attaches sliders to it,
     // and it handles saving/loading parameter values with the DAW session.
-    juce::AudioProcessorValueTreeState apvts;
+    juce::AudioProcessorValueTreeState apvts
+    {
+            *this, nullptr, "Parameters", createParameterLayout()
+    };
 
 private:
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();

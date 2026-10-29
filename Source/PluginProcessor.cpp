@@ -13,7 +13,7 @@ ConvolutionReverbProcessor::ConvolutionReverbProcessor()
 //==============================================================================
 juce::AudioProcessorValueTreeState::ParameterLayout ConvolutionReverbProcessor::createParameterLayout()
 {
-    juce::AudioProcessorValueTreeState::ParameterLayout layout;
+    juce::AudioProcessorValueTreeState::ParameterLayout layout; // make layout varible
 
     // TODO: add the plugin's parameters here. Example of the pattern:
     //
@@ -25,6 +25,15 @@ juce::AudioProcessorValueTreeState::ParameterLayout ConvolutionReverbProcessor::
     //
     // Read it on the audio thread with:
     //     apvts.getRawParameterValue ("example")->load()
+
+    // generic "gain" parameter just to test if this works.
+    // will add successive layout.add calls to add actual parameters we need
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID{ "gain", 1 },
+        "Output Gain",
+        juce::NormalisableRange<float> {-12.0f, 12.0f},
+        0.0f
+    ));
 
     return layout;
 }
@@ -62,7 +71,7 @@ void ConvolutionReverbProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     juce::ignoreUnused (midiMessages);
     juce::ScopedNoDenormals noDenormals;
 
-    // Clear any output channels that have no matching input.
+    // Clear any output channels that have no matching input (incase we have more output than inputs)
     for (auto ch = getTotalNumInputChannels(); ch < getTotalNumOutputChannels(); ++ch)
         buffer.clear (ch, 0, buffer.getNumSamples());
 
@@ -71,6 +80,29 @@ void ConvolutionReverbProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     //
     // TODO (Milestone 2): wrap the buffer in a juce::dsp::AudioBlock and run
     // your convolution over it.
+
+    auto totalNumInputChannels = getTotalNumInputChannels();
+    auto totalNumOutputChannels = getTotalNumOutputChannels();
+
+    // This is the place where you'd normally do the guts of your plugin's
+    // audio processing...
+    // Make sure to reset the state if your inner loop is processing
+    // the samples and the outer loop is handling the channels.
+    // Alternatively, you can process the samples with the channels
+    // interleaved by keeping the same state.
+
+    // demo code to apply the gain parameter to the audio signal
+    float gainDB = apvts.getRawParameterValue("gain")->load(); // gets gain in DB
+    float gainLinear = juce::Decibels::decibelsToGain(gainDB); // converts it to linear gain
+    for (int channel = 0; channel < totalNumInputChannels; ++channel) // for every channel
+    {
+        auto* channelData = buffer.getWritePointer(channel); // get var to write to the channel
+
+        for (int sample = 0; sample < buffer.getNumSamples(); ++sample) // iterate through all the samples in the buffer
+        {
+            channelData[sample] = channelData[sample] * gainLinear; // multiply sample value by the gain
+        }
+    }
 }
 
 //==============================================================================

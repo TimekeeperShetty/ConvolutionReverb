@@ -14,7 +14,7 @@ juce_add_plugin(ConvolutionReverb
     NEEDS_MIDI_OUTPUT FALSE
     IS_MIDI_EFFECT FALSE
     EDITOR_WANTS_KEYBOARD_FOCUS FALSE
-    COPY_PLUGIN_AFTER_BUILD FALSE               # Set TRUE to auto-install into your system plugin folder
+    COPY_PLUGIN_AFTER_BUILD TRUE               # Set TRUE to auto-install into your system plugin folder
     PLUGIN_MANUFACTURER_CODE Grpx               # TODO: 4 chars, at least one upper-case letter
     PLUGIN_CODE Cvrb                            # 4 chars, exactly one upper-case letter
     FORMATS AU VST3 Standalone                  # AU is only built on macOS
